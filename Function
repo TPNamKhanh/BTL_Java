@@ -1,7 +1,9 @@
 package BTL;
 import BTL.Fuction.Customer;
 import BTL.Fuction.Room;
+import BTL.Fuction.Booking;
 
+import java.io.*;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -94,14 +96,7 @@ public class Function {
         Customer customer = new Customer(identity,customerName,email,phoneNumber);
         return customer;
     }
-
-
-    public void listRoom(){
-        treeMap.forEach((key,value) -> {
-            System.out.println("RoomID: " + value.getRoomId() + "\n" + "Number of bed: " + value.getNumberOfBed());
-        });
-    }
-
+    
     public void Booking(){
         Scanner scanner = new Scanner(System.in);
 
@@ -136,6 +131,12 @@ public class Function {
             System.out.println("Room is not being booked!");
     }
 
+    public void listRoom(){
+        treeMap.forEach((key,value) -> {
+            System.out.println("RoomID: " + value.getRoomId() + "\n" + "Number of bed: " + value.getNumberOfBed());
+        });
+    }
+
     public void listEmptyRoom(){
         treeMap.forEach((key,value) -> {
             if(!treeMap_book.containsKey(key)) {
@@ -153,4 +154,82 @@ public class Function {
         });
     }
 
+    public void writeRoom() throws IOException {
+        FileOutputStream fileOutputStream = null;
+
+
+        try{
+            fileOutputStream = new FileOutputStream("Room.dat");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+
+            treeMap.forEach((key, value) -> {
+                try {
+                    objectOutputStream.writeObject(value);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }catch (Exception e){
+            System.out.println(e);
+        }finally {
+            fileOutputStream.close();
+        }
+    }
+
+    public void readRoom() throws IOException {
+        FileInputStream fileInputStream = null;
+        try{
+            fileInputStream = new FileInputStream("Room.dat");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            while(true){
+                Room room = (Room) objectInputStream.readObject();
+
+                if(room == null)
+                    return;
+                treeMap.put(room.getRoomId(),room);
+            }
+        }catch (Exception e){
+            fileInputStream.close();
+        }
+    }
+
+    public void writeBooking() throws IOException {
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream("Booking.dat");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            treeMap_book.forEach((key,value) -> {
+                try {
+                    Booking booking = new Booking(key, value);
+                    objectOutputStream.writeObject(booking);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            fileOutputStream.close();
+        }
+    }
+
+    public void readBooking() throws IOException {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream("Booking.dat");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                while (true){
+                    Booking booking = (Booking) objectInputStream.readObject();
+                    if(booking == null)
+                        return;
+                    treeMap_book.put(booking.getRoomID(),booking.getCustomer());
+                }
+        } catch (Exception e) {
+            fileInputStream.close();
+        }
+    }
 }
