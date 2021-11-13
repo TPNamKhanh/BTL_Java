@@ -1,0 +1,156 @@
+package BTL;
+import BTL.Fuction.Customer;
+import BTL.Fuction.Room;
+
+import java.util.Scanner;
+import java.util.TreeMap;
+
+public class Function {
+    private TreeMap<String, Room> treeMap = new TreeMap<String,Room>();
+    private TreeMap<String, Customer> treeMap_book = new TreeMap<String ,Customer>();
+
+    boolean checkRoom(String roomId){
+        return treeMap.containsKey(roomId);
+    }
+
+    public void addRoom() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("RoomId: ");
+        String roomId = scanner.nextLine();
+
+        System.out.print("Number of bed: ");
+        int numberOfBed = scanner.nextInt();
+
+        if (!checkRoom(roomId)) {
+            Room room = new Room(roomId, numberOfBed);
+
+            treeMap.put(roomId, room);
+
+            System.out.println("Add successfully!");
+        }
+
+        else
+            System.out.println("Room already exists!");
+    }
+
+     public void editRoom(){
+         Scanner scanner = new Scanner(System.in);
+         String roomId;
+
+         System.out.print("RoomID: ");
+         roomId = scanner.nextLine();
+
+         if(checkRoom(roomId)  && !treeMap_book.containsKey(roomId)){
+             int numberOfBed;
+             System.out.print("New number of bed: ");
+             numberOfBed = scanner.nextInt();
+             Room room = new Room(roomId,numberOfBed);
+             treeMap.replace(roomId,room);
+
+             System.out.print("Edit successfully!");
+         }
+
+         else if(!checkRoom(roomId))
+             System.out.println("RoomID does not exist!");
+
+         else
+             System.out.println("Room is being booked!");
+     }
+
+     public void removeRoom(){
+         Scanner scanner = new Scanner(System.in);
+         String roomId;
+
+         System.out.print("RoomID: ");
+         roomId = scanner.nextLine();
+
+         if(checkRoom(roomId) && !treeMap_book.containsKey(roomId)){
+            treeMap.remove(roomId);
+            System.out.println("Remove Successfully!");
+         }
+         else if(!checkRoom(roomId))
+             System.out.println("RoomID does not exist!");
+         else
+             System.out.println("Room is being booked!");
+     }
+
+     Customer addCustomer(){
+        Scanner scanner = new Scanner(System.in);
+        String identity, customerName, email, phoneNumber;
+
+        System.out.print("Identity: ");
+        identity = scanner.nextLine();
+
+        System.out.print("Cutomer Name: ");
+        customerName = scanner.nextLine();
+
+        System.out.print("Email: ");
+        email = scanner.nextLine();
+
+        System.out.print("Phone Number: ");
+        phoneNumber = scanner.nextLine();
+
+        Customer customer = new Customer(identity,customerName,email,phoneNumber);
+        return customer;
+    }
+
+
+    public void listRoom(){
+        treeMap.forEach((key,value) -> {
+            System.out.println("RoomID: " + value.getRoomId() + "\n" + "Number of bed: " + value.getNumberOfBed());
+        });
+    }
+
+    public void Booking(){
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("RoomID: ");
+        String roomId = scanner.nextLine();
+
+        if(checkRoom(roomId)){
+            if(!treeMap_book.containsKey(roomId)){
+                treeMap_book.put(roomId,addCustomer());
+                System.out.println("Booking Successfully");
+            }
+            else
+                System.out.println("Room is booked!");
+        }
+        else
+            System.out.println("RoomID does not exist!");
+    }
+
+    public void checkOut(){
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("RoomID: ");
+        String roomId = scanner.nextLine();
+
+        if(checkRoom(roomId) && treeMap_book.containsKey(roomId)){
+            treeMap_book.remove(roomId);
+            System.out.println("Checkout Successfully");
+        }
+        else if(!checkRoom(roomId))
+            System.out.println("RoomID does not exist!");
+        else
+            System.out.println("Room is not being booked!");
+    }
+
+    public void listEmptyRoom(){
+        treeMap.forEach((key,value) -> {
+            if(!treeMap_book.containsKey(key)) {
+                System.out.println("RoomID: " + value.getRoomId() + "\n" + "Numbber of bed: " + value.getNumberOfBed());
+                System.out.println("----------------------------------------------------------------------------------------------------------------------");
+            }
+        });
+    }
+
+    public void listRoomBooked(){
+        treeMap_book.forEach((key,value) -> {
+            System.out.println("RoomID: " + treeMap.get(key).getRoomId() + "\n" + "Number of bed: " + treeMap.get(key).getNumberOfBed());
+            System.out.println("Identity: " + value.getIdentity() + "\n" + "Customer Name: " + value.getCustomerName() + "\n" + "Email: " + value.getEmail() + "\n" + "Phone Number: " + value.getPhoneNumber());
+            System.out.println("----------------------------------------------------------------------------------------------------------------------");
+        });
+    }
+
+}
